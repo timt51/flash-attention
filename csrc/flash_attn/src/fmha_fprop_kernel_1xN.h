@@ -267,7 +267,7 @@ inline __device__ void device_1xN_(const Params &params, const int bidb, const i
     // Wind gmem tiles to the correct position.
     static_assert(Cta_tile_p::N % Cta_tile_p::M == 0);
     const int begin_og = begin;
-    begin = Is_causal ? std::max(begin, loop_step_idx * Cta_tile_p::N / Cta_tile_p::M) : begin;
+    // begin = Is_causal ? std::max(begin, loop_step_idx * Cta_tile_p::N / Cta_tile_p::M) : begin;
     const int steps_og = steps;
     steps -= begin - begin_og;
     gmem_q.move(begin);
@@ -599,7 +599,8 @@ inline __device__ void device_1xN_(const Params &params, const int bidb, const i
         const bool is_final_write =
             Is_last
             || ((loop_step_idx + 1) * Cta_tile_p::N >= binfo.actual_seqlen_k)
-            || ((Is_causal) && ((begin + l) * Cta_tile_p::M < (loop_step_idx + 1) * Cta_tile_p::N));
+            ;
+            // || ((Is_causal) && ((begin + l) * Cta_tile_p::M < (loop_step_idx + 1) * Cta_tile_p::N));
         #pragma unroll
         for (int jj = 0; jj < Gmem_tile_o::STGS_PER_LOOP; jj++) {
             float sum = p_sum_o[jj][0];

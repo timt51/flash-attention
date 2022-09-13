@@ -184,7 +184,7 @@ inline __device__ void compute_dq_dk_dv_1xN_one_iter(const Params &params, Prng 
     Gmem_softmax_sum gmem_softmax_d(params.dsoftmax_sum, params, tidx);
 
     static_assert(Cta_tile_p::N % Cta_tile_p::M == 0);
-    const int begin = Is_causal ? loop_step_idx * Cta_tile_p::N / Cta_tile_p::M : 0;
+    const int begin = 0;  // Is_causal ? loop_step_idx * Cta_tile_p::N / Cta_tile_p::M : 0;
     const int steps = (params.seqlen_q + Cta_tile_p::M - 1) / Cta_tile_p::M - begin;
 
     // Wind gmem tiles to the correct position.
@@ -573,7 +573,8 @@ inline __device__ void compute_dq_dk_dv_1xN_one_iter(const Params &params, Prng 
         const bool is_final_write =
             Is_last
             || ((loop_step_idx + 1) * Cta_tile_p::N >= binfo.actual_seqlen_k)
-            || ((Is_causal) && ((begin + l) * Cta_tile_p::M < (loop_step_idx + 1) * Cta_tile_p::N));
+            ;
+            // || ((Is_causal) && ((begin + l) * Cta_tile_p::M < (loop_step_idx + 1) * Cta_tile_p::N));
         if (is_final_write) {
             // if (Is_dropout) {
             //     dq_out[0] = fmha::fmul4(dq_out[0], params.rp_dropout);
